@@ -1,9 +1,23 @@
-## Estimating batch means (e.g.-quality control scenario,
-## we're manufacturing widgets, we'd like to know if the
-## widget teams are keep quality up, so we measure quality 
-## of each widget and evaluate the quality of a batch using
-## its mean).  Let's call it a pre-hierarchical model because
-## it has all the right structure but we don't add it yet.
+## New scenario and a single model for multiple batches: 
+
+## Scenario: some sort of quality control situation where
+## we're manufacturing widgets and each widget is scored 
+## on quality after manufacturing.  Widgets are manufactured
+## in batches and each batch is produced by a single 
+## manufacturing team.
+##
+## Data: We would like to evaluate the teams on the quality of their
+## manufacturing over time and also track particularly low/high
+## quality batches, so in addition to the quality score for
+## each widget we record: 
+##         1) the quality score,
+##         2) the widget id, 
+##         3) the batch id, and 
+##         4) the team id
+
+## I'm calling this a pre-hierarchical model because
+## it has all the right structure but we don't use
+## that in the estimation.
 
 library(rstan); library(magrittr); library(dplyr); library(tidyr)
 library(shinystan)
@@ -18,31 +32,34 @@ N <- 15
 mu <- 3.52
 sigma <- 7.11
 team_effects <- seq(from=-2, to=2, length.out=K)
+team_weights <- ((1:K)^2) / sum((1:K)^2)
+
+
+## Again, simulate from this model:
+m3 <- stan('m3-simulate-batches.stan', data=list(
+  N=N, K=K, M=M, mu=mu, sigma=sigma, team_effects=team_effects,
+  team_weights=team_weights),
+  iter=100+500, warmup=500, chains=1)
 
 ## Assign batch to team, with uneven probability.
 batch_team_map <- data.frame(
   batch=1:M, 
-  team=sample(x=1:K, size=M, replace=TRUE, 
-    prob=(1:K)^2)  #### UNEVEN probabilities!!
+  team=rstan::extract(m3)[['batch_team_index']][100,,drop=TRUE]
 )
 
 ## Assign widget to batch:
 widget_batch_map <- data.frame(
   widget=1:(N*M),
-  batch=sample(x=1:M, size=N*M, replace=TRUE)
+  batch=rstan::extract(m3)[['widget_batch_index']][100,,drop=TRUE]
 )
-
-## Again, simulate from this model:
-m1 <- stan('simulate-batch-drama.stan', data=list(
-  N=N, K=K, M=M, mu=mu, sigma=sigma, team_effects=team_effects,
-  batch_team_index=batch_team_map[['team']],
-  widget_batch_index=widget_batch_map[['batch']]),
-  iter=100+500, warmup=500, chains=1)
 
 ## Assemble the data set:
 data <- data.frame(
-  y=rstan::extract(m1, pars='y')[['y']][100,,drop=TRUE],
-  widget_batch_map) %>% left_join(batch_team_map)
+  y=rstan::extract(m3)[['y']][100,,drop=TRUE],
+  widget=1:(N*M)) %>%
+  left_join(widget_batch_map, by='widget') %>% 
+  left_join(batch_team_map, by='batch') %>%
+  mutate(team_f = factor(team))
 
 ## Calculate batch and team statistics.
 batch_stats <- data %>% group_by(team, batch) %>% 
@@ -63,18 +80,19 @@ pl <- ggplot(data=data,
   geom_point(shape=2) + 
   geom_point(data=batch_stats, aes(x=mean, y=batch), 
     color="red", size=3) +
-  geom_vline(xintercept=mu, color="blue") + theme_minimal()
+  geom_vline(xintercept=mu, color="blue") + theme_minimal() +
+  facet_wrap( ~ team_f, ncol=1)
 
 ## Let's get the batch means and their credible
 ## intervals (80%) as our estimates:
-m2 <- stan('estimate-batch-drama.stan', 
+m4 <- stan('m4-estimate-batches.stan', 
   data=list(N=N, K=K, M=M, y=data[['y']], widget=data[['widget']],
     batch=data[['batch']], team=data[['team']], 
     batch_team_index=batch_team_map[['team']],
     widget_batch_index=widget_batch_map[['batch']]), 
     chains=5, iter=200+1000, warmup=1000)
 
-data <- rstan::extract(m2)[['team_effects']] %>%
+data <- rstan::extract(m4)[['team_effects']] %>%
   data.frame(check.names=FALSE) %>% mutate(iteration=1:nrow(.)) %>% 
   gather(team, quality, -iteration) %>% group_by(team) %>%
   summarise(`team_10%`=quantile(quality,.1), team_mean=mean(quality), 
@@ -93,12 +111,12 @@ pl_team_est <- pl + geom_errorbarh(
   aes(xmin=`team_10%`, x=team_mean, xmax=`team_90%`, y=batch), color='blue') +
 geom_point(
   data=data,
-  aes(x=team_mean, y=batch), color='blue')
+  aes(x=team_mean, y=batch), color='blue') 
 
 
 stop("STOPPING HERE ON PURPOSE.")
 print(pl)
-launch_shinystan(m2)
+launch_shinystan(m4)
 print(pl_team_est)
 
 

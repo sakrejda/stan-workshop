@@ -20,7 +20,7 @@ sigma <- 7.11
 ## This stan call uses the no-U-turn sampler (NUTS) to
 ## sample from a normal distribution.  This is complete
 ## overkill, but useful for thinking about Stan programs.
-m1 <- stan('simulate-normal.stan', data=list(N=N, mu=mu, sigma=sigma),
+m1 <- stan('m1-simulate-normal.stan', data=list(N=N, mu=mu, sigma=sigma),
   iter=M+300, warmup=300, chains=1)
 
 ## Extract the data sets in ggplot style.
@@ -50,7 +50,7 @@ group_means <- matrix(data=NA, nrow=4, ncol=M)
 rownames(group_means) <- c('group','10%','mu','90%')
 y <- rstan::extract(m1, pars="y")[['y']]
 for (m in 1:M) {
-  m2 <- stan('estimate-normal.stan', data=list(N=N, y=y[m,]), chains=1)
+  m2 <- stan('m2-estimate-normal.stan', data=list(N=N, y=y[m,]), chains=1)
   group_means[1,m] <- m
   group_means[2:4,m] <- rstan::extract(m2, pars='mu')[['mu']] %>%
     quantile(probs=c(0.1,.5,.9))
