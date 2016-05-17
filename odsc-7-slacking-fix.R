@@ -4,7 +4,7 @@
 
 ## Using the original simulated batch data, we run a slightly
 ## modified Stan program to estimate team effects.
-m9 <- stan('m6-estimate-nc-hierarchy.stan', 
+m10 <- stan('m7-estimate-nc-t-hierarchy.stan', 
   data=list(N=N, K=K, M=M, 
     y=slacking_data[['y']], 
     widget=slacking_data[['widget']],
@@ -14,9 +14,9 @@ m9 <- stan('m6-estimate-nc-hierarchy.stan',
     widget_batch_index=slacking_widget_batch_map[['batch']]), 
     chains=5, iter=1000+1000, warmup=1000, thin=20)
 
-s9 <- rstan::extract(m9)
+s10 <- rstan::extract(m10)
 
-e9 <- s9[['team_effects']] %>% data.frame(check.names=FALSE) %>% 
+e10 <- s10[['team_effects']] %>% data.frame(check.names=FALSE) %>% 
   mutate(iteration=1:nrow(.)) %>% gather(team, quality, -iteration) %>% 
   group_by(team) %>% summarise(
     `team_10%`=quantile(quality,.1), 
@@ -30,17 +30,17 @@ e9 <- s9[['team_effects']] %>% data.frame(check.names=FALSE) %>%
 #  red dots: data set mean.
 #  blue line: true mean.
 pl <- ggplot() + geom_point(
-  data=left_join(slacking_data, e9, c('team','team_f')), 
+  data=left_join(slacking_data, e10, c('team','team_f')), 
   aes(x=y, y=batch_f, color=team_f), shape=2
 ) + geom_point(
   data=slacking_batch_stats, 
   aes(x=mean, y=batch_f, group=team_f), color="red", size=3
 ) + geom_errorbarh(
-  data=right_join(e9, slacking_batch_stats, c('team','team_f')),
+  data=right_join(e10, slacking_batch_stats, c('team','team_f')),
   aes(xmin=`team_10%`, x=team_mean, xmax=`team_90%`, 
       y=batch_f, group=team_f), color='blue'
 ) + geom_point(
-  data=right_join(e9, slacking_batch_stats, c('team','team_f')),
+  data=right_join(e10, slacking_batch_stats, c('team','team_f')),
   aes(x=team_mean, y=batch_f), color='blue'
 ) + geom_vline(xintercept=mu, color="blue") + 
     theme_minimal() + 
@@ -63,7 +63,7 @@ slacking_data %>% group_by(team) %>% summarise(n=n()) %>%
 # point out that the non-slacking teams effects are over-estimated, 
 # the standard deviation parameter is bogus (huge), and the mean is
 # also uncertain.
-launch_shinystan(m9)
+launch_shinystan(m10)
 
 print(pl)
 

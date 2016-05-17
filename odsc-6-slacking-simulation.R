@@ -1,10 +1,12 @@
-## Old scenario and a single model for multiple batches: 
+## Old scenario with a twist and a single model for multiple batches: 
 
 ## Scenario: some sort of quality control situation where
 ## we're manufacturing widgets and each widget is scored 
 ## on quality after manufacturing.  Widgets are manufactured
 ## in batches and each batch is produced by a single 
-## manufacturing team.
+## manufacturing team.  The twist is that one of the teams
+## just doesn't care anymore and while they've continued to
+## produce widgets the quality just isn't there.
 ##
 ## Data: We would like to evaluate the teams on the quality of their
 ## manufacturing over time and also track particularly low/high
@@ -15,10 +17,6 @@
 ##         3) the batch id, and 
 ##         4) the team id
 
-## I'm calling this a pre-hierarchical model because
-## it has all the right structure but we don't use
-## that in the estimation.
-
 library(rstan); library(shinystan)
 library(magrittr); library(dplyr); library(tidyr)
 
@@ -26,14 +24,14 @@ library(magrittr); library(dplyr); library(tidyr)
 # with a mean of mu and standard deviation of sigma from the 
 # normal distribution. Any given batch can be produced by any
 # of K teams
-K <- 4
-M <- 30  
-N <- 15
+K <- 10 
+M <- 250  
+N <- 5
 mu <- 3.52
 sigma <- 7.11
 batch_sigma <- 3
 team_effects <- seq(from=-2, to=2, length.out=K-1) %>%
-  c(-50)
+  c(-16)
 team_weights <- ((1:K)^2) / sum((1:K)^2)
 
 
