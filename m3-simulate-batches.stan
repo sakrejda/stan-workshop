@@ -4,6 +4,7 @@ data {
   int K; // number of teams
   real mu;
   real<lower=0> sigma;
+  real<lower=0> batch_sigma;
   real team_effects[K];
   simplex[K] team_weights;
 }
@@ -16,12 +17,15 @@ model { }
 
 generated quantities {
   int batch_team_index[M];
+  real batch_effects[M];
   int widget_batch_index[M*N];
   real y[N*M];
   for (m in 1:M) {
     real batch_mean;
     batch_team_index[m] <- categorical_rng(team_weights);
-    batch_mean <- mu + team_effects[batch_team_index[m]];
+    batch_effects[m] <- normal_rng(0,batch_sigma);
+    batch_mean <- mu + team_effects[batch_team_index[m]] +
+                       batch_effects[m];
     for (n in 1:N) {
       int i;
       i <- n+(m-1)*N;

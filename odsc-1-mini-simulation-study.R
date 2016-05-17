@@ -6,8 +6,8 @@
 ## data block to the parameter block, whereas the array of 'y'
 ## moves from the parameter block to the data block.  
 
-library(rstan); library(magrittr); library(dplyr); library(tidyr)
-library(shinystan)
+library(rstan); library(shinystan)  # 
+library(dplyr); library(tidyr)
 
 # We are simulating M data sets of N data points with a
 # mean of mu and standard deviation of sigma from the 
@@ -23,8 +23,10 @@ sigma <- 7.11
 m1 <- stan('m1-simulate-normal.stan', data=list(N=N, mu=mu, sigma=sigma),
   iter=M+300, warmup=300, chains=1)
 
-## Extract the data sets in ggplot style.
-y <- rstan::extract(m1, pars='y') %>% data.frame %>% 
+s1 <- rstan::extract(m1)
+
+## Extract the data sets in tidy style.
+y <- s1[['y']] %>% data.frame %>% 
   mutate(group=1:n()) %>% gather(point, y, -group)
 
 ## Calculate group statistics.
@@ -48,13 +50,12 @@ pl <- ggplot(data=y, aes(x=y, y=group)) +
 ## set whose mean we want to estimate.:
 group_means <- matrix(data=NA, nrow=4, ncol=M)
 rownames(group_means) <- c('group','10%','mu','90%')
-y <- rstan::extract(m1, pars="y")[['y']]
 for (m in 1:M) {
-  m2 <- stan('m2-estimate-normal.stan', data=list(N=N, y=y[m,]), chains=1)
+  m2 <- stan('m2-estimate-normal.stan', data=list(N=N, y=s1[['y']][m,]), chains=1)
   group_means[1,m] <- m
-  group_means[2:4,m] <- rstan::extract(m2, pars='mu')[['mu']] %>%
+  group_means[2:4,m] <- rstan::extract(m2)[['mu']] %>%
     quantile(probs=c(0.1,.5,.9))
-  group_means[3,m] <- rstan::extract(m2, pars='mu')[['mu']] %>%
+  group_means[3,m] <- rstan::extract(m2)[['mu']] %>%
     mean
 }
 

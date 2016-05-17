@@ -8,12 +8,16 @@ data {
 }
 
 parameters {
+  real mu;
   real<lower=0> sigma;
   real team_effects[K];
+  real<lower=0> team_sigma;
 }
 
 model {
-  team_effects ~ normal(0,5);
+  mu ~ normal(0,5);
+  team_effects ~ normal(0,team_sigma);
+  team_sigma ~ gamma(2,.1);
   sigma ~ gamma(2,.1);
   for (i in 1:(M*N)) { 
     real mu_local;
