@@ -10,7 +10,6 @@ data {
   int widget_batch_index[N*M];
 }
 
-
 parameters {
   real mu;
   real<lower=0> sigma;

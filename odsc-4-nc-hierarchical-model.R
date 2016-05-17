@@ -54,7 +54,7 @@ data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeri
 # the semi-funnel (bivariate plot, x-axis: team_effects[1],
 # y-axis team_sigma, then show how semi-funnel disappears
 # for team_effects[1], but reappears inverted for team_effects_raw[2]...
-launch_shinystan(m3)
+launch_shinystan(m6)
 
 print(pl_team_est)
 
