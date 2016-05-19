@@ -14,7 +14,7 @@ m5 <- stan('m5-estimate-hierarchy.stan',
 
 s5 <- rstan::extract(m5)
 
-e5 <- s5[['team_effects']] %>% data.frame(check.names=FALSE) %>% 
+e5 <- s5[['team_means']] %>% data.frame(check.names=FALSE) %>% 
   mutate(iteration=1:nrow(.)) %>% gather(team, quality, -iteration) %>% 
   group_by(team) %>% summarise(
     `team_10%`=quantile(quality,.1), 
@@ -57,8 +57,8 @@ data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeri
 # estimating a team effect for a fixed team_sigma rather 
 # than estimating a marginal of the joint distribution. 
 # #BayesPays
-launch_shinystan(m2)
+launch_shinystan(m5)
 
-print(pl_team_est)
+print(pl)
 
 

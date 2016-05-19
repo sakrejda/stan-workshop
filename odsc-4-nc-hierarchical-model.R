@@ -13,7 +13,7 @@ m6 <- stan('m6-estimate-nc-hierarchy.stan',
 
 s6 <- rstan::extract(m6)
 
-e6 <- s6[['team_effects']] %>% data.frame(check.names=FALSE) %>% 
+e6 <- s6[['team_means']] %>% data.frame(check.names=FALSE) %>% 
   mutate(iteration=1:nrow(.)) %>% gather(team, quality, -iteration) %>% 
   group_by(team) %>% summarise(
     `team_10%`=quantile(quality,.1), 
@@ -56,7 +56,7 @@ data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeri
 # for team_effects[1], but reappears inverted for team_effects_raw[2]...
 launch_shinystan(m6)
 
-print(pl_team_est)
+print(pl)
 
 # Estimate of sqrt(sigma^2 + team_sigma^2) should be total 
 # sigma from simulation.

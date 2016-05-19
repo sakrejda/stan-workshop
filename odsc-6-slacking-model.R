@@ -16,7 +16,7 @@ m9 <- stan('m6-estimate-nc-hierarchy.stan',
 
 s9 <- rstan::extract(m9)
 
-e9 <- s9[['team_effects']] %>% data.frame(check.names=FALSE) %>% 
+e9 <- s9[['team_means']] %>% data.frame(check.names=FALSE) %>% 
   mutate(iteration=1:nrow(.)) %>% gather(team, quality, -iteration) %>% 
   group_by(team) %>% summarise(
     `team_10%`=quantile(quality,.1), 

@@ -38,8 +38,10 @@ model {
 
 generated quantities {
   real team_effects[K];
+  vector[K] team_means;
   for (k in 1:K) {
     team_effects[k] <- tan(team_effects_raw[k])*team_sigma;
   }
+  team_means <- mu + to_vector(team_effects);
 }
 

@@ -27,7 +27,7 @@ transformed parameters {
 model {
   mu ~ normal(0,5);
   team_effects_raw ~ normal(0,1);
-  team_sigma ~ gamma(2,.1);
+  team_sigma ~ gamma(2,1);
   sigma ~ gamma(2,.1);
   for (i in 1:(M*N)) { 
     real mu_local;
@@ -38,8 +38,10 @@ model {
 
 generated quantities {
   real team_effects[K];
+  vector[K] team_means;
   for (k in 1:K) {
     team_effects[k] <- team_effects_raw[k]*team_sigma;
   }
+  team_means <- mu + to_vector(team_effects);
 }
 

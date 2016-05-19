@@ -18,7 +18,7 @@ m4 <- stan('m4-estimate-batches.stan',
 
 s4 <- rstan::extract(m4)
 
-e4 <- s4[['team_effects']] %>% data.frame(check.names=FALSE) %>% 
+e4 <- s4[['team_means']] %>% data.frame(check.names=FALSE) %>% 
   mutate(iteration=1:nrow(.)) %>% gather(team, quality, -iteration) %>% 
   group_by(team) %>% summarise(
     `team_10%`=quantile(quality,.1), 
@@ -56,6 +56,6 @@ stop("STOPPING HERE ON PURPOSE.")
 # which should be the simulation sqrt(sigma^2+batch_sigma^2)
 launch_shinystan(m4)
 
-print(pl_team_est)
+print(pl)
 
 

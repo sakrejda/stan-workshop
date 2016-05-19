@@ -26,11 +26,11 @@ library(magrittr); library(dplyr); library(tidyr)
 # with a mean of mu and standard deviation of sigma from the 
 # normal distribution. Any given batch can be produced by any
 # of K teams
-K <- 4
-M <- 30  
-N <- 15
+K <- 10 
+M <- 50  
+N <- 5
 mu <- 3.52
-sigma <- 7.11
+sigma <- 4.11
 batch_sigma <- 3
 team_effects <- seq(from=-2, to=2, length.out=K)
 team_weights <- ((1:K)^2) / sum((1:K)^2)
