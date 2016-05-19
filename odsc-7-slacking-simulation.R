@@ -1,10 +1,6 @@
 ## Old scenario with a twist and a single model for multiple batches: 
 
-## Scenario: some sort of quality control situation where
-## we're manufacturing widgets and each widget is scored 
-## on quality after manufacturing.  Widgets are manufactured
-## in batches and each batch is produced by a single 
-## manufacturing team.  The twist is that one of the teams
+## The twist: one of the teams
 ## just doesn't care anymore and while they've continued to
 ## produce widgets the quality just isn't there.
 ##
@@ -25,15 +21,14 @@ library(magrittr); library(dplyr); library(tidyr)
 # normal distribution. Any given batch can be produced by any
 # of K teams
 K <- 10 
-M <- 50  
+M <- 150  
 N <- 5
 mu <- 3.52
 sigma <- 4.11
 batch_sigma <- 3
 team_effects <- seq(from=-2, to=2, length.out=K-1) %>%
   c(-16)
-team_weights <- ((1:K)^2) / sum((1:K)^2)
-
+team_weights <- rep(1,K)/K 
 
 ## Again, simulate from this model:
 m8 <- stan('m3-simulate-batches.stan', data=list(
