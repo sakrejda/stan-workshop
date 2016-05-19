@@ -48,7 +48,6 @@ pl <- ggplot() + geom_point(
       shrink=TRUE, scales='free_y')
 
 
-stop("STOPPING HERE ON PURPOSE.")
 
 # Find team we have the least data on:
 slacking_data %>% group_by(team) %>% summarise(n=n()) %>% 
@@ -63,9 +62,15 @@ slacking_data %>% group_by(team) %>% summarise(n=n()) %>%
 # point out that the non-slacking teams effects are over-estimated, 
 # the standard deviation parameter is bogus (huge), and the mean is
 # also uncertain.
-launch_shinystan(m9)
-
 print(pl)
 
-# Estimate of sqrt(sigma^2 + team_sigma^2) should be total 
+# Estimate of sqrt(sigma^2 + batch_sigma^2) should be total 
 # sigma from simulation.
+simulation_sigma <- sqrt(sigma^2+batch_sigma^2)
+estimate_sigma_6 <- s9[['sigma']] %>% quantile(probs=c(0.025,0.5,0.075))
+
+launch_shinystan(m9)
+
+
+
+

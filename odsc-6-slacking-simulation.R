@@ -25,10 +25,10 @@ library(magrittr); library(dplyr); library(tidyr)
 # normal distribution. Any given batch can be produced by any
 # of K teams
 K <- 10 
-M <- 250  
+M <- 50  
 N <- 5
 mu <- 3.52
-sigma <- 7.11
+sigma <- 4.11
 batch_sigma <- 3
 team_effects <- seq(from=-2, to=2, length.out=K-1) %>%
   c(-16)

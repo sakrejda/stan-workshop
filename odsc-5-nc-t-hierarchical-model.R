@@ -6,7 +6,7 @@
 
 ## Using the original simulated batch data, we run a slightly
 ## modified Stan program to estimate team effects.
-m7 <- stan('m7-estimate-nc-hierarchy.stan', 
+m7 <- stan('m7-estimate-nc-t-hierarchy.stan', 
   data=list(N=N, K=K, M=M, y=data[['y']], widget=data[['widget']],
     batch=data[['batch']], team=data[['team']], 
     batch_team_index=batch_team_map[['team']],
