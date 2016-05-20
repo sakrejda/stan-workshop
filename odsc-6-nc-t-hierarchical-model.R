@@ -47,7 +47,10 @@ pl <- ggplot() + geom_point(
       shrink=TRUE, scales='free_y')
 
 
-stop("STOPPING HERE ON PURPOSE.")
+print(pl)
+
+# Estimate of sqrt(sigma^2 + team_sigma^2) should be total 
+# sigma from simulation.
 
 # Find team we have the least data on:
 data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeric(team))
@@ -58,7 +61,3 @@ data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeri
 # for team_effects[1], but reappears inverted for team_effects_raw[2]...
 launch_shinystan(m7)
 
-print(pl)
-
-# Estimate of sqrt(sigma^2 + team_sigma^2) should be total 
-# sigma from simulation.

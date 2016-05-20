@@ -45,8 +45,8 @@ pl <- ggplot() + geom_point(
     facet_wrap( ~ team_f, ncol=1, drop=TRUE, 
       shrink=TRUE, scales='free_y')
 
+print(pl)
 
-stop("STOPPING HERE ON PURPOSE.")
 
 # Find team we have the least data on:
 data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeric(team))
@@ -58,7 +58,4 @@ data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeri
 # than estimating a marginal of the joint distribution. 
 # #BayesPays
 launch_shinystan(m5)
-
-print(pl)
-
 

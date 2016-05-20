@@ -44,11 +44,13 @@ pl <- ggplot() + geom_point(
     facet_wrap( ~ team_f, ncol=1, drop=TRUE, 
       shrink=TRUE, scales='free_y')
 
-
-stop("STOPPING HERE ON PURPOSE.")
+print(pl)
 
 # Find team we have the least data on:
 data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeric(team))
+
+# Estimate of sqrt(sigma^2 + team_sigma^2) should be total 
+# sigma from simulation.
 
 # Find estimate of sigma vs. team_sigma, show
 # the semi-funnel (bivariate plot, x-axis: team_effects[1],
@@ -56,7 +58,4 @@ data %>% group_by(team) %>% summarise(n=n()) %>% ungroup() %>% arrange(as.numeri
 # for team_effects[1], but reappears inverted for team_effects_raw[2]...
 launch_shinystan(m6)
 
-print(pl)
 
-# Estimate of sqrt(sigma^2 + team_sigma^2) should be total 
-# sigma from simulation.

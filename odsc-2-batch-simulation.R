@@ -28,7 +28,7 @@ library(magrittr); library(dplyr); library(tidyr)
 # of K teams
 K <- 10 
 M <- 50  
-N <- 5
+N <- 15
 mu <- 3.52
 sigma <- 4.11
 batch_sigma <- 3

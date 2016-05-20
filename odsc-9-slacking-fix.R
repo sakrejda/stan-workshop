@@ -48,11 +48,6 @@ pl <- ggplot() + geom_point(
       shrink=TRUE, scales='free_y')
 
 
-
-# Find team we have the least data on:
-slacking_data %>% group_by(team) %>% summarise(n=n()) %>% 
-  ungroup() %>% arrange(as.numeric(team))
-
 # Find estimate of sigma vs. team_sigma, show
 # the semi-funnel (bivariate plot, x-axis: team_effects[1],
 # y-axis team_sigma, then show how semi-funnel disappears
@@ -62,8 +57,12 @@ slacking_data %>% group_by(team) %>% summarise(n=n()) %>%
 # point out that the non-slacking teams effects are over-estimated, 
 # the standard deviation parameter is bogus (huge), and the mean is
 # also uncertain.
-
 print(pl)
+
+# Find team we have the least data on:
+slacking_data %>% group_by(team) %>% summarise(n=n()) %>% 
+  ungroup() %>% arrange(as.numeric(team))
+
 
 # Estimate of sqrt(sigma^2 + batch_sigma^2) should be total 
 # sigma from simulation.

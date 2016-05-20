@@ -49,13 +49,12 @@ pl <- ggplot() + geom_point(
     facet_wrap( ~ team_f, ncol=1, drop=TRUE, 
       shrink=TRUE, scales='free_y')
 
+print(pl)
 
-stop("STOPPING HERE ON PURPOSE.")
 
 # Find estimates of team effects, find estimate of sigma
 # which should be the simulation sqrt(sigma^2+batch_sigma^2)
 launch_shinystan(m4)
 
-print(pl)
 
 
