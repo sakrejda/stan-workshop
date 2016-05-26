@@ -22,7 +22,8 @@ model {
   for (i in 1:(M*N)) { 
     real mu_local;
     mu_local <- mu + team_effects[team[i]];
-    increment_log_prob(normal_log(y[i], mu_local, sigma));
+    increment_log_prob(normal_log(y[i], 
+      mu_local, sigma));
   }
 }
 

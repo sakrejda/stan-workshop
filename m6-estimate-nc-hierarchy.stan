@@ -20,15 +20,17 @@ parameters {
 transformed parameters {
   real batch_mean[M];
   for (m in 1:M) {
-    batch_mean[m] <- mu + team_effects_raw[batch_team_index[m]]*team_sigma;
+    batch_mean[m] <- mu + 
+      team_effects_raw[batch_team_index[m]] * 
+      team_sigma;
   }
 }
 
 model {
-  mu ~ normal(0,5);
+  mu ~ normal(0,2);
   team_effects_raw ~ normal(0,1);
   team_sigma ~ gamma(2,1);
-  sigma ~ gamma(2,.1);
+  sigma ~ gamma(2,1);
   for (i in 1:(M*N)) { 
     real mu_local;
     mu_local <- batch_mean[widget_batch_index[i]];

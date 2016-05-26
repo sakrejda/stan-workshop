@@ -13,14 +13,16 @@ data {
 parameters {
   real mu;
   real<lower=0> sigma;
-  real<lower=-pi()/2, upper=pi()/2> team_effects_raw[K];
+  real<lower=-pi()/2, upper=pi()/2> 
+    team_effects_raw[K];
   real<lower=0> team_sigma;
 }
 
 transformed parameters {
   real batch_mean[M];
   for (m in 1:M) {
-    batch_mean[m] <- mu + tan(team_effects_raw[batch_team_index[m]])*team_sigma;
+    batch_mean[m] <- mu + 
+      tan(team_effects_raw[batch_team_index[m]])*team_sigma;
   }
 }
 
